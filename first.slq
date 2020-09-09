@@ -1,0 +1,79 @@
+def main() {
+  // a:=H(false);
+  // b:=H(true);
+  // b:=cnot(a, b);
+  // a:=false:!𝔹;
+  // print(a);
+  // yoyo := λ(n:!ℕ){
+  //   vec := vector(n,0:𝔹); // vector of length n filled with zeros
+  //   for i in [0..n){
+  //     vec[i] := H(vec[i]);
+  //   }
+  //   return vec;
+  // };
+
+  // v:=yoyo(4);
+  // // v[0]:=H(v[0]);
+  // v1 := v[2];
+  // measure(v);
+  // return v1;
+  // measure(v);
+  // n:=1;
+  // a:=1:!ℕ;
+  // b:=1;
+  // c:=a*b xorb n;
+  // return c;
+
+
+  a := 5:uint[3];
+//   b:=reverse(invQFT[3])(a);
+  b:=qft(a);
+  return b;
+}
+
+
+def qft[n:!ℕ](input:uint[n])mfree{
+  for i in [0..n){
+    input[i] := H(input[i]);
+    for j in [i+1..n){
+      r := input[j];
+        if r{
+        input[i]:=rotZ(π/(2^(j-i)), input[i]);
+      }
+      forget(r = input[j]);
+    }
+  }
+  return input;
+}
+
+def invQFT[n:!ℕ](x:uint[n])mfree:uint[n]{
+	for i in [0..n) {
+		for j in [n-i..n) {
+			r := x[n-i-1];
+			if r { x[j] := rotZ(-π/(2^(j-(n-i-1))), x[j]); }
+			forget(r = x[n-i-1]);
+		}
+		x[n-i-1] := H(x[n-i-1]);
+	}
+	return x;
+}
+
+
+def cnot(const x:𝔹,y:𝔹){
+  if x{
+    y := X(y);
+  }
+  return y;
+}
+
+def id(arr:𝔹[]){
+  return arr;
+}
+
+def uniformSuperposition[n:!ℕ]:𝔹^n{
+  vec := vector(n,0:𝔹); // vector of length n filled with zeros
+  for i in [0..n){
+    vec[i] := H(vec[i]);
+  }
+  return vec;
+}

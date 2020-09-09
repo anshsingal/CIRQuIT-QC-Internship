@@ -1,0 +1,45 @@
+def uniformSuperposition[n:!ℕ](input:uint[n]){
+//   vec := 0:uint[n]; // vector of length n filled with zeros
+  for i in [0..n){
+    input[i] := H(input[i]);
+  }
+  return input;
+}
+
+def qft[n:!ℕ](input:uint[n])mfree{
+    for i in [0..n){
+        input[i] := H(input[i]);
+        for j in [i+1..n){
+            r := input[j];
+            if r{
+                input[i]:=rotZ(π/(2^(j-i)), input[i]);
+            }
+            forget(r = input[j]);
+        }
+    }
+    return input;
+}
+
+a := 7; N := 15:!uint[4];
+
+def main()=>shor(a, N);
+
+def shor[n:!ℕ](a:!ℕ, N:!uint[n]){
+    input:=0:uint[2*n];
+    output:=0:uint[n];
+    input:=uniformSuperposition(input);
+
+    for i in [0..2*n){
+        if input[i]{
+            output = (a^(2^i))%N;
+        }
+    }
+    measure(output);
+    // return input;
+    // phased_input := modularExponentiation(N, a, input, output);
+    final_phase := measure(reverse(qft[2*n])(input));
+    return final_phase;
+    // return reverse(qft[2*n])(input);
+    // print(final_phase);
+    // return final_phase;
+}
